@@ -2,12 +2,12 @@ package main
 
 import (
 	_ "database/sql"
-	"fmt"
 	"github.com/gin-gonic/gin"
 	_ "github.com/glebarez/go-sqlite"
+	"io"
 	"log"
 	"net/http"
-	models "pala/backend/models"
+	"pala/backend/models"
 )
 
 func deleteVoterByID(c *gin.Context) {
@@ -26,7 +26,7 @@ func deleteVoterByID(c *gin.Context) {
 func getVoters(c *gin.Context) {
 	voters, err := models.QueryVoters()
 	if err != nil {
-		fmt.Println(err)
+		log.Fatal(err)
 		return
 	}
 
@@ -60,7 +60,7 @@ func updateVoters(c *gin.Context) {
 	_, err = models.AddVoter(&newVoter)
 
 	if err != nil {
-		fmt.Println(err)
+		log.Fatal(err)
 		return
 	}
 
@@ -75,7 +75,12 @@ func main() {
 	}
 
 	gin.SetMode(gin.ReleaseMode)
-	r := gin.Default()
+	gin.DefaultWriter = io.Discard
+
+	r := gin.New()
+
+	r.Use(gin.Recovery())
+
 	r.GET("/voters/", getVoters)
 	r.POST("/voters/", updateVoters)
 	r.GET("/voters/:id", getVoterByID)

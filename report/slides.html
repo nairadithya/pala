@@ -23,26 +23,73 @@
 </section>
 </foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="3" data-theme="default" lang="en-US" style="--theme:default;">
 <h2 id="why-golang">Why Golang</h2>
+<p>Flask</p>
+<pre is="marp-pre" data-auto-scaling="downscale-only"><code class="language-sh">❯ ./wrk -t12 -c400 -d30s http://127.0.0.1:5000/voters/
+Running 30s <span class="hljs-built_in">test</span> @ http://127.0.0.1:5000/voters/
+  12 threads and 400 connections
+  Thread Stats   Avg      Stdev     Max   +/- Stdev
+    Latency   434.04ms  120.53ms 745.01ms   82.33%
+    Req/Sec    76.11     48.29   353.00     69.45%
+  25894 requests <span class="hljs-keyword">in</span> 30.04s, 9.58MB <span class="hljs-built_in">read</span>
+  Non-2xx or 3xx responses: 25894
+Requests/sec:    861.88
+Transfer/sec:    326.59KB
+</code></pre>
 </section>
 </foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="4" data-theme="default" lang="en-US" style="--theme:default;">
+<h2 id="why-golang-1">Why Golang</h2>
+<p>Node.js</p>
+<pre is="marp-pre" data-auto-scaling="downscale-only"><code class="language-sh">❯ ./wrk -t12 -c400 -d30s http://127.0.0.1:3000/voters/
+Running 30s <span class="hljs-built_in">test</span> @ http://127.0.0.1:3000/voters/
+  12 threads and 400 connections
+  Thread Stats   Avg      Stdev     Max   +/- Stdev
+    Latency    91.25ms   84.58ms   1.99s    98.95%
+    Req/Sec   376.13     86.99     1.15k    88.59%
+  130990 requests <span class="hljs-keyword">in</span> 30.04s, 39.60MB <span class="hljs-built_in">read</span>
+  Socket errors: connect 0, <span class="hljs-built_in">read</span> 0, write 0, <span class="hljs-built_in">timeout</span> 187
+Requests/sec:   4360.39
+Transfer/sec:      1.32MB
+</code></pre>
+</section>
+</foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="5" data-theme="default" lang="en-US" style="--theme:default;">
+<h2 id="why-golang-2">Why Golang</h2>
+<p>Golang</p>
+<pre is="marp-pre" data-auto-scaling="downscale-only"><code class="language-sh">❯ wrk -t12 -c400 -d30s http://127.0.0.1:8080/voters/
+Running 30s <span class="hljs-built_in">test</span> @ http://127.0.0.1:8080/voters/
+  12 threads and 400 connections
+  Thread Stats   Avg      Stdev     Max   +/- Stdev
+    Latency    16.24ms   13.15ms 147.72ms   66.07%
+    Req/Sec     2.24k   256.41     8.39k    87.90%
+  804250 requests <span class="hljs-keyword">in</span> 30.10s, 221.66MB <span class="hljs-built_in">read</span>
+Requests/sec:  26720.77
+Transfer/sec:      7.36MB
+</code></pre>
+</section>
+</foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="6" data-theme="default" lang="en-US" style="--theme:default;">
 <h2 id="what-has-been-done">What Has Been Done?</h2>
 <ul>
 <li>The backend has been fully implemented</li>
 <li>Mapping of Data model is complete</li>
 </ul>
 </section>
-</foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="5" data-theme="default" lang="en-US" style="--theme:default;">
+</foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="7" data-theme="default" lang="en-US" style="--theme:default;">
 <h2 id="what-needs-to-be-done">What Needs To Be Done?</h2>
 <ul>
 <li>Frontend</li>
 <li>The DB architecture needs to be swapped.</li>
 <li>Benchmarking with wrk</li>
+</ul>
+</section>
+</foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="8" data-theme="default" lang="en-US" style="--theme:default;">
+<h2 id="what-needs-to-be-done-1">What Needs To Be Done</h2>
+<ul>
 <li>Concurrency with goroutines</li>
 <li>Investigating and implementing load balancer</li>
+<li>Implement scheduling algorithms for voting booth allocation.</li>
 <li>Monitoring system</li>
 </ul>
 </section>
-</foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="6" data-theme="default" lang="en-US" style="--theme:default;">
+</foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="9" data-theme="default" lang="en-US" style="--theme:default;">
 <h2 id="workload-distribution">Workload Distribution</h2>
 <ol>
 <li>Backend implementation - Adithya</li>

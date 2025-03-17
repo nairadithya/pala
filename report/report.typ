@@ -10,11 +10,11 @@
     font: "Manrope",
     size: 12pt
 )
-
 #show raw: set text(font: "JetBrainsMono NF")
 #set raw(theme: auto)
 = 23AID213 Operating Systems Project Report
 By Adithya Nair, Kausik Muthukumar, P Ananthapadmanabhan Nair
+
 == Proposed Plan
 1. An election management system that can scale
 2. Usage of monitoring tools such as eBPF to monitor the system's performance
@@ -22,9 +22,9 @@ By Adithya Nair, Kausik Muthukumar, P Ananthapadmanabhan Nair
 
 == Research
 
-1. Golang was chosen as it is an excellent language for the web. It provides a clean and simple abstraction for concurrency and multithreaded programming using *goroutines*.
-2. `wrk` is a simple HTTP benchmarking tool to monitor how many requests our web server can handle.
-3. `Gin` is a web framework for Go to make it trivial to deploy HTTP API endpoints for our frontend app to interface with.
+1. Golang was chosen as it is an excellent language for the web. It provides a clean and simple abstraction for concurrency and multithreaded programming using *goroutines* @chakrabortyGoroutinesGolangGolang2020.
+2. *wrk@glozerWgWrk2025* is a simple HTTP benchmarking tool to monitor how many requests our web server can handle.
+3. *Gin*@GingonicGin2025 is a web framework for Go to make it trivial to deploy HTTP API endpoints for our frontend app to interface with.
 
 == What Has Been Done?
 1. The backend for the voters has been implemented using `gin`, a performant web framework written in Golang with a SQLite database
@@ -32,16 +32,24 @@ By Adithya Nair, Kausik Muthukumar, P Ananthapadmanabhan Nair
 
 == What Needs To Be Completed?
 1. The DB architecture will be swapped to something more robust and scalable as time goes on. Potential candidates include PostgreSQL and MySQL Server. In Golang, it is trivial to switch architectures by swapping the database driver agent.
-2. Benchmarking using `wrk`.
+2. Benchmarking using `wrk`@glozerWgWrk2025.
 3. Usage of goroutines to implement concurrency.
 4. A basic frontend for voters to cast their votes.
 5. Investigating load balancing options.
 6. Monitoring the system using eBPF modules.
+
+== Project Plan
+1. Switch to PostgreSQL
+2. Use goroutines
+3. Implement scheduling algorithms for voters - RR and FCFS
+4. Deploy on a server
+
+---
 
 == Workload Distribution
 1. Backend implementation - Adithya
 2. Data Implementation - Kausik
 3. Frontend Development - Ananthapadanabhan
 
-
-== TODO Literature Survey
+---
+#bibliography("os.bib", style:"apa")
