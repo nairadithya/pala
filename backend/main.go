@@ -11,15 +11,15 @@ import (
 )
 
 func deleteVoterByID(c *gin.Context) {
-	// 	vid := c.Param("id")
-	// 	id, err := models.DeleteVoter(&vid)
+	// vid := c.Param("id")
+	// id, err := models.DeleteVoter(&vid)
 
-	// 	if err != nil {
-	// 		c.IndentedJSON(http.StatusNotFound, gin.H{"error": "No Voters Of That ID"})
-	// 		return
-	// 	} else {
-	// 		c.IndentedJSON(http.StatusOK, gin.H{"message": "Deleted voter"})
-	// 	}
+	// if err != nil {
+	// 	c.IndentedJSON(http.StatusNotFound, gin.H{"error": "No Voters Of That ID"})
+	// 	return
+	// } else {
+	// 	c.IndentedJSON(http.StatusOK, gin.H{"message": "Deleted voter"})
+	// }
 
 }
 
@@ -40,16 +40,13 @@ func getVoters(c *gin.Context) {
 
 func getVoterByID(c *gin.Context) {
 	id := c.Param("id")
-
 	voter, err := models.GetVoterByID(id)
 	if err != nil {
 		c.IndentedJSON(http.StatusNotFound, gin.H{"message": "voter not found"})
+		return
 	}
 
-	if voter != Voter{} {
 	c.IndentedJSON(http.StatusOK, voter)
-	}
-
 }
 
 func updateVoters(c *gin.Context) {
@@ -77,6 +74,7 @@ func main() {
 		return
 	}
 
+	gin.SetMode(gin.ReleaseMode)
 	r := gin.Default()
 	r.GET("/voters/", getVoters)
 	r.POST("/voters/", updateVoters)

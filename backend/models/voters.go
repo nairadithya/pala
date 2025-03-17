@@ -2,6 +2,7 @@ package models
 
 import (
 	"database/sql"
+	"errors"
 	"fmt"
 	_ "github.com/glebarez/go-sqlite"
 )
@@ -16,9 +17,12 @@ type Voter struct {
 
 func GetVoterByID(vid string) (Voter, error) {
 	var voter Voter
-	err := DB.QueryRow("SELECT voter from voters WHERE vid = ?", vid).Scan(&voter.ID, &voter.VName, &voter.Choice)
-	if err != sql.ErrNoRows {
+	err := DB.QueryRow("SELECT * from voters WHERE vid = ?", vid).Scan(&voter.ID, &voter.VName, &voter.Choice)
+	if err == sql.ErrNoRows {
 		fmt.Println("No such voter")
+		return Voter{}, errors.New("voter not found")
+	} else if err != nil {
+		fmt.Println(err)
 		return Voter{}, err
 	}
 
