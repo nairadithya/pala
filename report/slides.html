@@ -35,6 +35,7 @@ Running 30s <span class="hljs-built_in">test</span> @ http://127.0.0.1:5000/vote
 Requests/sec:    861.88
 Transfer/sec:    326.59KB
 </code></pre>
+<p>Note that Flask is single process and single threaded.</p>
 </section>
 </foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="4" data-theme="default" lang="en-US" style="--theme:default;">
 <h2 id="why-golang-1">Why Golang</h2>
@@ -50,6 +51,7 @@ Running 30s <span class="hljs-built_in">test</span> @ http://127.0.0.1:3000/vote
 Requests/sec:   4360.39
 Transfer/sec:      1.32MB
 </code></pre>
+<p>Node.js is a single-threaded runtime</p>
 </section>
 </foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="5" data-theme="default" lang="en-US" style="--theme:default;">
 <h2 id="why-golang-2">Why Golang</h2>
@@ -66,13 +68,16 @@ Transfer/sec:      7.36MB
 </code></pre>
 </section>
 </foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="6" data-theme="default" lang="en-US" style="--theme:default;">
+<p>Golang's standard library has an <code>HTTP</code> library that is multi-threaded by default.</p>
+</section>
+</foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="7" data-theme="default" lang="en-US" style="--theme:default;">
 <h2 id="what-has-been-done">What Has Been Done?</h2>
 <ul>
 <li>The backend has been fully implemented</li>
 <li>Mapping of Data model is complete</li>
 </ul>
 </section>
-</foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="7" data-theme="default" lang="en-US" style="--theme:default;">
+</foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="8" data-theme="default" lang="en-US" style="--theme:default;">
 <h2 id="what-needs-to-be-done">What Needs To Be Done?</h2>
 <ul>
 <li>Frontend</li>
@@ -80,16 +85,16 @@ Transfer/sec:      7.36MB
 <li>Benchmarking with wrk</li>
 </ul>
 </section>
-</foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="8" data-theme="default" lang="en-US" style="--theme:default;">
+</foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="9" data-theme="default" lang="en-US" style="--theme:default;">
 <h2 id="what-needs-to-be-done-1">What Needs To Be Done</h2>
 <ul>
 <li>Concurrency with goroutines</li>
 <li>Investigating and implementing load balancer</li>
-<li>Implement scheduling algorithms for voting booth allocation.</li>
+<li>Implement scheduling algorithms for allocating requests</li>
 <li>Monitoring system</li>
 </ul>
 </section>
-</foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="9" data-theme="default" lang="en-US" style="--theme:default;">
+</foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="10" data-theme="default" lang="en-US" style="--theme:default;">
 <h2 id="workload-distribution">Workload Distribution</h2>
 <ol>
 <li>Backend implementation - Adithya</li>

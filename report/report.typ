@@ -49,7 +49,12 @@ By Adithya Nair, Kausik Muthukumar, P Ananthapadmanabhan Nair
 == Workload Distribution
 1. Backend implementation - Adithya
 2. Data Implementation - Kausik
-3. Frontend Development - Ananthapadanabhan
+3. Frontend Development - P Ananthapadmanabhan Nair
+
+---
+
+== Look into edge computing for election management system
 
 ---
 #bibliography("os.bib", style:"apa")
+

@@ -28,6 +28,9 @@ Running 30s test @ http://127.0.0.1:5000/voters/
 Requests/sec:    861.88
 Transfer/sec:    326.59KB
 ```
+
+Note that Flask is single process and single threaded.
+
 ---
 ## Why Golang
 Node.js
@@ -43,6 +46,8 @@ Running 30s test @ http://127.0.0.1:3000/voters/
 Requests/sec:   4360.39
 Transfer/sec:      1.32MB
 ```
+
+Node.js is a single-threaded runtime
 
 ---
 ## Why Golang
@@ -61,6 +66,9 @@ Transfer/sec:      7.36MB
 ```
 
 ---
+Golang's standard library has an `HTTP` library that is multi-threaded by default.
+
+---
 
 ## What Has Been Done?
 - The backend has been fully implemented
@@ -74,10 +82,11 @@ Transfer/sec:      7.36MB
 - Benchmarking with wrk
 
 ---
+
 ## What Needs To Be Done
 - Concurrency with goroutines
 - Investigating and implementing load balancer
-- Implement scheduling algorithms for voting booth allocation.
+- Implement scheduling algorithms for allocating requests
 - Monitoring system
 
 ---
