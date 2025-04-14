@@ -17,7 +17,7 @@
 	</div>
 	<div class="mb-6">
 		<Label for="voter_id" class="mb-2">Voter ID</Label>
-		<Input type="email" id="voter_id" placeholder="VXX" required />
+		<Input type="text" id="voter_id" placeholder="VXX" required />
 	</div>
 	<div class="mb-6">
 		<Label for="password" class="mb-2">Password</Label>
