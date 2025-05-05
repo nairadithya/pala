@@ -1,10 +1,46 @@
-# Pala
+# sv
 
-An election management software built with Golang and Svelte.
+Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
 
-## Large Scale Schematic
-### Entities
-1. Voters
-2. Election Officials (Monitoring A Booth)
-3. Booth
-4. 
+## Creating a project
+
+If you're seeing this, you've probably already done this step. Congrats!
+
+```bash
+# create a new project in the current directory
+npx sv create
+
+# create a new project in my-app
+npx sv create my-app
+```
+
+## Developing
+
+Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
+
+```bash
+npm run dev
+
+# or start the server and open the app in a new browser tab
+npm run dev -- --open
+```
+
+## Building
+
+To create a production version of your app:
+
+```bash
+npm run build
+```
+
+You can preview the production build with `npm run preview`.
+
+> To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
+
+# Schema
+This app has to function as:
+1. A voting app for voters.
+2. A monitoring app for election officials
+3. A registration platform for candidates.
+
+It should have real time analytics, take in votes from a user and update instantly.
