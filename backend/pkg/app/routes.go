@@ -13,10 +13,9 @@ func (s *Server) Routes() *gin.Engine {
 			user.POST("", s.CreateVoter())
 		}
 
-		// prefix the weight routes
-		weight := v1.Group("/vote")
+		vote := v1.Group("/vote")
 		{
-			weight.POST("", s.CreateVote())
+			vote.POST("", s.CreateVote())
 		}
 	}
 

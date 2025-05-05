@@ -1,40 +1,27 @@
 package api
 
-import (
-	"errors"
-	"strings"
-)
+import "errors"
 
-// UserService contains the methods of the user service
 type VoterService interface {
-	New(user NewVoterRequest) error
+	New(request NewVoterRequest) error
+	GetVoterInfo(voterID int) (Voter, error)
 }
 
 type VoterRepository interface {
-	CreateVoter(NewVoterRequest) error
+	CreateVoter(w NewVoterRequest) error
+	GetVoter(voterID int) (Voter, error)
 }
 
 type voterService struct {
 	storage VoterRepository
 }
 
-func NewVoterService(voterRepo VoterRepository) VoterService {
-	return &voterService{storage: voterRepo}
+func NewVoterService(voteRepo VoterRepository) VoterService {
+	return &voterService{storage: voteRepo}
 }
 
-func (v *voterService) New(voter NewVoterRequest) error {
-	if voter.FirstName == "" {
-		return errors.New("voter service - first name required")
-	}
-
-	if voter.LastName == "" {
-		return errors.New("voter service - last name required")
-	}
-
-	voter.FirstName = strings.ToLower(voter.FirstName)
-	voter.LastName = strings.TrimSpace(voter.LastName)
-
-	err := v.storage.CreateVoter(voter)
+func (w *voterService) New(request NewVoterRequest) error {
+	err := w.storage.CreateVoter(request)
 
 	if err != nil {
 		return err

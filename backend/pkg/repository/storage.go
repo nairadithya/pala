@@ -8,16 +8,23 @@ import (
 	_ "github.com/golang-migrate/migrate/v4/source/file"
 	_ "github.com/lib/pq"
 	"log"
+	"pala/backend/pkg/api"
 	"path/filepath"
 	"runtime"
-	"weight-tracker/pkg/api"
 )
 
 type Storage interface {
 	RunMigrations(connectionString string) error
-	CreateUser(request api.NewUserRequest) error
-	CreateWeightEntry(request api.Weight) error
-	GetUser(userID int) (api.User, error)
+	CreateVoter(request api.NewVoterRequest) error
+	CreateVoteEntry(request api.NewVoteRequest) error
+	CreateElection(request api.NewElectionRequest) error
+	CreateParty(request api.NewPartyRequest) error
+	CreateCandidate(request api.NewCandidateRequest) error
+	GetVoter(voterID int) (api.Voter, error)
+	GetVoteByVoter(voterID int) (api.Vote, error)
+	GetCandidate(candidateID int) (api.Candidate, error)
+	GetElection(electionID int) (api.Election, error)
+	GetParty(candidateID int) (api.Party, error)
 }
 
 type storage struct {
@@ -32,7 +39,7 @@ func (s *storage) RunMigrations(connectionString string) error {
 	if connectionString == "" {
 		return errors.New("repository: the connString was empty")
 	}
-	// get base path
+
 	_, b, _, _ := runtime.Caller(0)
 	basePath := filepath.Join(filepath.Dir(b), "../..")
 
@@ -54,13 +61,12 @@ func (s *storage) RunMigrations(connectionString string) error {
 	return nil
 }
 
-func (s *storage) CreateUser(request api.NewUserRequest) error {
-	newUserStatement := `
-		INSERT INTO "user" (name, age, height, sex, activity_level, email, weight_goal)
-		VALUES ($1, $2, $3, $4, $5, $6, $7);
+func (s *storage) CreateVoter(request api.NewVoterRequest) error {
+	newVoterStatement := `
+		INSERT INTO "voter" (first_name, last_name, date_of_birth, contact_number)
+		VALUES ($1, $2, $3, $4);
 		`
-
-	err := s.db.QueryRow(newUserStatement, request.Name, request.Age, request.Height, request.Sex, request.ActivityLevel, request.Email, request.WeightGoal).Err()
+	err := s.db.QueryRow(newVoterStatement, request.FirstName, request.LastName, request.DateOfBirth, request.ContactNumber).Err()
 
 	if err != nil {
 		log.Printf("this was the error: %v", err.Error())
@@ -70,15 +76,14 @@ func (s *storage) CreateUser(request api.NewUserRequest) error {
 	return nil
 }
 
-func (s *storage) CreateWeightEntry(request api.Weight) error {
-	newWeightStatement := `
-		INSERT INTO weight (weight, user_id, bmr, daily_caloric_intake)
+func (s *storage) CreateVoteEntry(request api.NewVoteRequest) error {
+	newVoteStatement := `
+		INSERT INTO vote (candidate_id, voter_id)
 		VALUES ($1, $2, $3, $4)
-		RETURNING id;
+		RETURNING vote_id;
 		`
 
-	var ID int
-	err := s.db.QueryRow(newWeightStatement, request.Weight, request.UserID, request.BMR, request.DailyCaloricIntake).Scan(&ID)
+	err := s.db.QueryRow(newVoteStatement, request.CandidateID, request.VoterID).Err()
 
 	if err != nil {
 		log.Printf("this was the error: %v", err.Error())
@@ -88,19 +93,148 @@ func (s *storage) CreateWeightEntry(request api.Weight) error {
 	return nil
 }
 
-func (s *storage) GetUser(userID int) (api.User, error) {
-	getUserStatement := `
-		SELECT id, name, age, height, sex, activity_level, email, weight_goal FROM "user"
-		where id=$1;
+func (s *storage) CreateElection(request api.NewElectionRequest) error {
+	newVoteStatement := `
+		INSERT INTO "election" (election_name, election_date)
+		VALUES ($1, $2)
+		RETURNING election_id;
 		`
 
-	var user api.User
-	err := s.db.QueryRow(getUserStatement, userID).Scan(&user.ID, &user.Name, &user.Age, &user.Height, &user.Sex, &user.ActivityLevel, &user.Email, &user.WeightGoal)
+	err := s.db.QueryRow(newVoteStatement, request.ElectionName, request.ElectionDate).Err()
 
 	if err != nil {
 		log.Printf("this was the error: %v", err.Error())
-		return api.User{}, err
+		return err
 	}
 
-	return user, nil
+	return nil
+}
+
+func (s *storage) CreateParty(request api.NewPartyRequest) error {
+	newVoteStatement := `
+		INSERT INTO "party" (party_name, party_description)
+		VALUES ($1, $2)
+		RETURNING election_id;
+		`
+
+	err := s.db.QueryRow(newVoteStatement, request.PartyName, request.PartyDescription).Err()
+
+	if err != nil {
+		log.Printf("this was the error: %v", err.Error())
+		return err
+	}
+
+	return nil
+}
+
+func (s *storage) CreateCandidate(request api.NewCandidateRequest) error {
+	query := `
+		INSERT INTO candidate (first_name, last_name, party_id, bio)
+		VALUES ($1, $2, $3, $4)
+		RETURNING candidate_id;
+	`
+
+	err := s.db.QueryRow(query, request.FirstName, request.LastName, request.PartyID, request.Bio).Err()
+	if err != nil {
+		log.Printf("this was the error: %v", err.Error())
+		return err
+	}
+	return nil
+}
+
+func (s *storage) GetVoter(voterID int) (api.Voter, error) {
+	getVoterStatement := `
+		SELECT voter_id, first_name, last_name, date_of_birth, contact_number, registration_date, created_at, FROM "voter"
+		where voter_id=$1;
+		`
+
+	var voter api.Voter
+	err := s.db.QueryRow(getVoterStatement, voterID).Scan(&voter.VoterID, &voter.FirstName, &voter.LastName, &voter.DateOfBirth, &voter.ContactNumber)
+
+	if err != nil {
+		log.Printf("this was the error: %v", err.Error())
+		return api.Voter{}, err
+	}
+
+	return voter, nil
+}
+
+func (s *storage) GetVoteByVoter(voterID int) (api.Vote, error) {
+	getVoteStatement := `
+		SELECT vote_id, candidate_id, voter_id, vote_timestamp
+		WHERE voter_id = $1;
+						`
+
+	var vote api.Vote
+	err := s.db.QueryRow(getVoteStatement, voterID).Scan(&vote.VoteID, &vote.CandidateID, &vote.VoterID, &vote.VoteTimestamp)
+
+	if err != nil {
+		log.Printf("this was the error: %v", err.Error())
+		return api.Vote{}, err
+	}
+	return vote, nil
+}
+
+func (s *storage) GetCandidate(candidateID int) (api.Candidate, error) {
+	query := `
+		SELECT candidate_id, first_name, last_name, party_id, bio, created_at, updated_at
+		FROM candidate
+		WHERE candidate_id = $1;
+	`
+	var c api.Candidate
+	err := s.db.QueryRow(query, candidateID).Scan(
+		&c.CandidateID,
+		&c.FirstName,
+		&c.LastName,
+		&c.PartyID,
+		&c.Bio,
+		&c.CreatedAt,
+		&c.UpdatedAt,
+	)
+	if err != nil {
+		log.Printf("this was the error: %v", err.Error())
+		return api.Candidate{}, err
+	}
+	return c, nil
+}
+
+func (s *storage) GetElection(electionID int) (api.Election, error) {
+	query := `
+		SELECT election_id, election_name, election_date, created_at, updated_at
+		FROM election
+		WHERE election_id = $1;
+	`
+	var e api.Election
+	err := s.db.QueryRow(query, electionID).Scan(
+		&e.ElectionID,
+		&e.ElectionName,
+		&e.ElectionDate,
+		&e.CreatedAt,
+		&e.UpdatedAt,
+	)
+	if err != nil {
+		log.Printf("this was the error: %v", err.Error())
+		return api.Election{}, err
+	}
+	return e, nil
+}
+
+func (s *storage) GetParty(partyID int) (api.Party, error) {
+	query := `
+		SELECT party_id, party_name, created_at, updated_at
+		FROM party
+		WHERE party_id = $1;
+	`
+	var p api.Party
+	err := s.db.QueryRow(query, partyID).Scan(
+		&p.PartyID,
+		&p.PartyName,
+		&p.CreatedAt,
+		&p.UpdatedAt,
+	)
+	if err != nil {
+		log.Printf("this was the error: %v", err.Error())
+		return api.Party{}, err
+	}
+	return p, nil
 }

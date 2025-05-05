@@ -40,11 +40,8 @@ func run() error {
 
 	voterService := api.NewVoterService(storage)
 
-	weightService := api.NewWeightService(storage)
+	server := app.NewServer(router, voterService)
 
-	server := app.NewServer(router, voterService, weightService)
-
-	// start the server
 	err = server.Run()
 
 	if err != nil {

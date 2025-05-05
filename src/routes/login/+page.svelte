@@ -2,9 +2,9 @@
 	import { Input, Label, Helper, Button, Checkbox, A } from 'flowbite-svelte';
 </script>
 
-<div class="text-primary-500 text-center text-5xl">Welcome To Pala</div>
+<div class="text-primary-800 text-center text-5xl">Welcome To Pala</div>
 <div class="my-2 text-2xl">Registration For Elections</div>
-<form>
+<form method="POST" action="?/login">
 	<div class="mb-6 grid gap-6 md:grid-cols-2">
 		<div>
 			<Label for="first_name" class="mb-2">First name</Label>
@@ -17,7 +17,7 @@
 	</div>
 	<div class="mb-6">
 		<Label for="voter_id" class="mb-2">Voter ID</Label>
-		<Input type="text" id="voter_id" placeholder="VXX" required />
+		<Input type="email" id="voter_id" placeholder="VXX" required />
 	</div>
 	<div class="mb-6">
 		<Label for="password" class="mb-2">Password</Label>
@@ -35,5 +35,5 @@
 		</p>
 		.
 	</Checkbox>
-	<Button type="submit">Submit</Button>
+	<Button formaction="?/register">Register</Button>
 </form>
