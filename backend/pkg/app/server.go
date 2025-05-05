@@ -7,16 +7,22 @@ import (
 )
 
 type Server struct {
-	router       *gin.Engine
-	voterService api.VoterService
-	voteService  api.VoteService
+	router           *gin.Engine
+	voterService     api.VoterService
+	voteService      api.VoteService
+	partyService     api.PartyService
+	candidateService api.CandidateService
+	electionService  api.ElectionService
 }
 
-func NewServer(router *gin.Engine, userService api.VoterService, weightService api.VoteService) *Server {
+func NewServer(router *gin.Engine, voterService api.VoterService, voteService api.VoteService, partyService api.PartyService, candidateService api.CandidateService, electionService api.ElectionService) *Server {
 	return &Server{
-		router:       router,
-		voterService: userService,
-		voteService:  weightService,
+		router:           router,
+		voterService:     voterService,
+		voteService:      voteService,
+		partyService:     partyService,
+		candidateService: candidateService,
+		electionService:  electionService,
 	}
 }
 

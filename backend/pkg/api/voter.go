@@ -1,7 +1,5 @@
 package api
 
-import "errors"
-
 type VoterService interface {
 	New(request NewVoterRequest) error
 	GetVoterInfo(voterID int) (Voter, error)
@@ -28,4 +26,14 @@ func (w *voterService) New(request NewVoterRequest) error {
 	}
 
 	return nil
+}
+
+func (w *voterService) GetVoterInfo(voterID int) (Voter, error) {
+	voter, err := w.storage.GetVoter(voterID)
+
+	if err != nil {
+		return Voter{}, err
+	}
+
+	return voter, nil
 }
