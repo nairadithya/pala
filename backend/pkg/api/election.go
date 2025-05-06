@@ -1,5 +1,7 @@
 package api
 
+import "errors"
+
 type ElectionService interface {
 	New(request NewElectionRequest) error
 	GetElectionInfo(electionID int) (Election, error)

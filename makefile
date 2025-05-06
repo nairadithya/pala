@@ -1,8 +1,7 @@
 .PHONY: *
 
 backend:
-	cd backend && go build
-	./backend/backend
+	cd backend && go run cmd/server/main.go
 
 frontend:
 	bun dev

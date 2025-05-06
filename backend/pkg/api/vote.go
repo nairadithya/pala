@@ -27,3 +27,13 @@ func (w *voteService) New(request NewVoteRequest) error {
 
 	return nil
 }
+
+func (w *voteService) GetVoteByVoter(voteID int) (Vote, error) {
+	vote, err := w.storage.GetVoteByVoter(voteID)
+
+	if err != nil {
+		return Vote{}, err
+	}
+
+	return vote, nil
+}

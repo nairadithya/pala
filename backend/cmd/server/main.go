@@ -18,9 +18,8 @@ func main() {
 	}
 }
 
-// func run will be responsible for setting up db connections, routers etc
 func run() error {
-	connectionString := "postgres://postgres:postgres@localhost/postgres?sslmode=disable"
+	connectionString := "postgres://postgres:example@localhost:5432/postgres?sslmode=disable"
 
 	db, err := setupDatabase(connectionString)
 	if err != nil {
@@ -39,8 +38,12 @@ func run() error {
 	router.Use(cors.Default())
 
 	voterService := api.NewVoterService(storage)
+	voteService := api.NewVoteService(storage)
+	candidateService := api.NewCandidateService(storage)
+	partyService := api.NewPartyService(storage)
+	electionService := api.NewElectionService(storage)
 
-	server := app.NewServer(router, voterService)
+	server := app.NewServer(router, voterService, voteService, partyService, candidateService, electionService)
 
 	err = server.Run()
 
@@ -52,14 +55,12 @@ func run() error {
 }
 
 func setupDatabase(connString string) (*sql.DB, error) {
-	// change "postgres" for whatever supported database you want to use
 	db, err := sql.Open("postgres", connString)
 
 	if err != nil {
 		return nil, err
 	}
 
-	// ping the DB to ensure that it is connected
 	err = db.Ping()
 
 	if err != nil {

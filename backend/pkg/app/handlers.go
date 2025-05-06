@@ -63,7 +63,7 @@ func (s *Server) CreateVote() gin.HandlerFunc {
 			return
 		}
 
-		err = s.newVoteService.New(newVote)
+		err = s.voteService.New(newVote)
 
 		if err != nil {
 			log.Printf("service error: %v", err)
