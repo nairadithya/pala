@@ -11,11 +11,22 @@ func (s *Server) Routes() *gin.Engine {
 		user := v1.Group("/voter")
 		{
 			user.POST("", s.CreateVoter())
+			user.GET("/:id", s.GetVoterInfo())
 		}
 
 		vote := v1.Group("/vote")
 		{
 			vote.POST("", s.CreateVote())
+		}
+
+		candidates := v1.Group("/candidates")
+		{
+			candidates.GET("", s.GetAllCandidateInfo())
+		}
+
+		parties := v1.Group("/parties")
+		{
+			parties.GET("", s.GetAllParties())
 		}
 	}
 

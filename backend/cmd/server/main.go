@@ -3,12 +3,13 @@ package main
 import (
 	"database/sql"
 	"fmt"
-	"github.com/gin-contrib/cors"
-	"github.com/gin-gonic/gin"
 	"os"
 	"pala/backend/pkg/api"
 	"pala/backend/pkg/app"
 	"pala/backend/pkg/repository"
+
+	"github.com/gin-contrib/cors"
+	"github.com/gin-gonic/gin"
 )
 
 func main() {
@@ -19,7 +20,7 @@ func main() {
 }
 
 func run() error {
-	connectionString := "postgres://postgres:example@localhost:5432/postgres?sslmode=disable"
+	connectionString := "postgres://postgres:example@db:5432/postgres?sslmode=disable"
 
 	db, err := setupDatabase(connectionString)
 	if err != nil {
@@ -35,7 +36,12 @@ func run() error {
 	}
 
 	router := gin.Default()
-	router.Use(cors.Default())
+	router.Use(cors.New(cors.Config{
+		AllowOrigins:     []string{"*"},
+		AllowMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"},
+		AllowHeaders:     []string{"Origin", "Content-Type", "Accept", "Authorization"},
+		AllowCredentials: true,
+	}))
 
 	voterService := api.NewVoterService(storage)
 	voteService := api.NewVoteService(storage)

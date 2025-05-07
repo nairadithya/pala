@@ -3,10 +3,11 @@ package api
 import "time"
 
 type Party struct {
-	PartyID   int       `json:"party_id"`
-	PartyName string    `json:"party_name"`
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
+	PartyID          int       `json:"party_id"`
+	PartyName        string    `json:"party_name"`
+	PartyDescription *string   `json:"party_description,omitempty"`
+	CreatedAt        time.Time `json:"created_at"`
+	UpdatedAt        time.Time `json:"updated_at"`
 }
 
 type NewPartyRequest struct {
@@ -19,14 +20,14 @@ type Voter struct {
 	FirstName     string    `json:"first_name"`
 	LastName      string    `json:"last_name"`
 	DateOfBirth   time.Time `json:"date_of_birth"`
-	ContactNumber int       `json:"contact_number"`
+	ContactNumber string    `json:"contact_number"`
 }
 
 type NewVoterRequest struct {
 	FirstName     string    `json:"first_name"`
 	LastName      string    `json:"last_name"`
 	DateOfBirth   time.Time `json:"date_of_birth"`
-	ContactNumber int       `json:"contact_number"`
+	ContactNumber string    `json:"contact_number"`
 }
 
 type Election struct {

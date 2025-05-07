@@ -5,11 +5,13 @@ import "errors"
 type PartyService interface {
 	New(request NewPartyRequest) error
 	GetPartyInfo(partyID int) (Party, error)
+	GetAllParties() ([]Party, error)
 }
 
 type PartyRepository interface {
 	CreateParty(request NewPartyRequest) error
 	GetParty(partyID int) (Party, error)
+	GetAllParties() ([]Party, error)
 }
 
 type partyService struct {
@@ -30,4 +32,8 @@ func (p *partyService) New(request NewPartyRequest) error {
 
 func (p *partyService) GetPartyInfo(partyID int) (Party, error) {
 	return p.storage.GetParty(partyID)
+}
+
+func (p *partyService) GetAllParties() ([]Party, error) {
+	return p.storage.GetAllParties()
 }

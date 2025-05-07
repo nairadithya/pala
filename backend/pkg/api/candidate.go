@@ -5,11 +5,13 @@ import "errors"
 type CandidateService interface {
 	New(request NewCandidateRequest) error
 	GetCandidateInfo(candidateID int) (Candidate, error)
+	GetAllCandidates() ([]Candidate, error)
 }
 
 type CandidateRepository interface {
 	CreateCandidate(request NewCandidateRequest) error
 	GetCandidate(candidateID int) (Candidate, error)
+	GetAllCandidates() ([]Candidate, error)
 }
 
 type candidateService struct {
@@ -30,4 +32,8 @@ func (c *candidateService) New(request NewCandidateRequest) error {
 
 func (c *candidateService) GetCandidateInfo(candidateID int) (Candidate, error) {
 	return c.storage.GetCandidate(candidateID)
+}
+
+func (c *candidateService) GetAllCandidates() ([]Candidate, error) {
+	return c.storage.GetAllCandidates()
 }

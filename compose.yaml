@@ -1,20 +1,60 @@
+# Use version 3.8 of the Docker Compose file format (or higher if needed)
+version: '3.8'
+
 services:
+
+  # Traefik service (Reverse Proxy and Load Balancer)
+  traefik:
+    image: "traefik:v3.4"
+    container_name: "traefik"
+    command:
+      - "--entryPoints.web.address=:80"
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+    ports:
+      - "80:80"
+      - "8080:8080"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+
+  whoami:
+    image: "traefik/whoami"
+    container_name: "simple-service"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.whoami.rule=Host(`whoami.localhost`)"
+      - "traefik.http.routers.whoami.entrypoints=web"
+
   db:
     container_name: pala-db-1
     image: postgres
     restart: always
     environment:
       POSTGRES_PASSWORD: example
+      POSTGRES_DB: postgres
+      POSTGRES_USER: postgres 
     volumes:
       - pgdata:/var/lib/postgresql/data
-    ports:
-      - 5432:5432
+    # ports:
+    #   - 5432:5432
 
-  adminer:
-    image: adminer
-    restart: always
-    ports:
-      - 8081:8080
+  backend:
+    image: pala:0.0.2
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_USER: postgres
+      DB_PASSWORD: example
+      DB_NAME: postgres
+    depends_on:
+      - db
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.backend.rule=Host(`backend.localhost`)"
+      - "traefik.http.routers.backend.entrypoints=web"
+      - "traefik.http.services.backend.loadbalancer.server.port=1234"
 
 volumes:
   pgdata:
+

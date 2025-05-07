@@ -57,4 +57,3 @@ By Adithya Nair, Kausik Muthukumar, P Ananthapadmanabhan Nair
 
 ---
 #bibliography("os.bib", style:"apa")
-

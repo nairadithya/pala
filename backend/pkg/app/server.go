@@ -29,7 +29,7 @@ func NewServer(router *gin.Engine, voterService api.VoterService, voteService ap
 func (s *Server) Run() error {
 	r := s.Routes()
 
-	err := r.Run()
+	err := r.Run(":1234")
 
 	if err != nil {
 		log.Printf("Server - there was an error calling Run on router: %v", err)

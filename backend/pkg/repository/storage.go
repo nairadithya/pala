@@ -3,14 +3,15 @@ package repository
 import (
 	"database/sql"
 	"errors"
-	"github.com/golang-migrate/migrate/v4"
-	_ "github.com/golang-migrate/migrate/v4/database/postgres"
-	_ "github.com/golang-migrate/migrate/v4/source/file"
-	_ "github.com/lib/pq"
 	"log"
 	"pala/backend/pkg/api"
 	"path/filepath"
 	"runtime"
+
+	"github.com/golang-migrate/migrate/v4"
+	_ "github.com/golang-migrate/migrate/v4/database/postgres"
+	_ "github.com/golang-migrate/migrate/v4/source/file"
+	_ "github.com/lib/pq"
 )
 
 type Storage interface {
@@ -24,7 +25,9 @@ type Storage interface {
 	GetVoteByVoter(voterID int) (api.Vote, error)
 	GetCandidate(candidateID int) (api.Candidate, error)
 	GetElection(electionID int) (api.Election, error)
+	GetAllCandidates() ([]api.Candidate, error)
 	GetParty(candidateID int) (api.Party, error)
+	GetAllParties() ([]api.Party, error)
 }
 
 type storage struct {
@@ -144,7 +147,7 @@ func (s *storage) CreateCandidate(request api.NewCandidateRequest) error {
 
 func (s *storage) GetVoter(voterID int) (api.Voter, error) {
 	getVoterStatement := `
-		SELECT voter_id, first_name, last_name, date_of_birth, contact_number, registration_date, created_at, FROM "voter"
+		SELECT voter_id, first_name, last_name, date_of_birth, contact_number FROM "voter"
 		where voter_id=$1;
 		`
 
@@ -237,4 +240,78 @@ func (s *storage) GetParty(partyID int) (api.Party, error) {
 		return api.Party{}, err
 	}
 	return p, nil
+}
+
+func (s *storage) GetAllCandidates() ([]api.Candidate, error) {
+	query := `
+		SELECT candidate_id, first_name, last_name, party_id, bio
+		FROM candidate;
+	`
+	rows, err := s.db.Query(query)
+	if err != nil {
+		log.Printf("this was the error: %v", err.Error())
+		return nil, err
+	}
+	defer rows.Close()
+
+	var candidates []api.Candidate
+	for rows.Next() {
+		var c api.Candidate
+		err := rows.Scan(
+			&c.CandidateID,
+			&c.FirstName,
+			&c.LastName,
+			&c.PartyID,
+			&c.Bio,
+		)
+		if err != nil {
+			log.Printf("this was the error: %v", err.Error())
+			return nil, err
+		}
+		candidates = append(candidates, c)
+	}
+
+	if err := rows.Err(); err != nil {
+		log.Printf("this was the error: %v", err.Error())
+		return nil, err
+	}
+
+	return candidates, nil
+}
+
+func (s *storage) GetAllParties() ([]api.Party, error) {
+	query := `
+		SELECT party_id, party_name, party_description, created_at, updated_at
+		FROM party;
+	`
+	rows, err := s.db.Query(query)
+	if err != nil {
+		log.Printf("this was the error: %v", err.Error())
+		return nil, err
+	}
+	defer rows.Close()
+
+	var parties []api.Party
+	for rows.Next() {
+		var p api.Party
+		err := rows.Scan(
+			&p.PartyID,
+			&p.PartyName,
+			&p.PartyDescription,
+			&p.CreatedAt,
+			&p.UpdatedAt,
+		)
+		if err != nil {
+			log.Printf("this was the error: %v", err.Error())
+			return nil, err
+		}
+		parties = append(parties, p)
+	}
+
+	if err := rows.Err(); err != nil {
+		log.Printf("this was the error: %v", err.Error())
+		return nil, err
+	}
+
+	return parties, nil
 }
