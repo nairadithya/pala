@@ -35,6 +35,7 @@ func run() error {
 		return err
 	}
 
+	// gin.SetMode(gin.ReleaseMode)
 	router := gin.Default()
 	router.Use(cors.New(cors.Config{
 		AllowOrigins:     []string{"*"},

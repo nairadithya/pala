@@ -16,7 +16,7 @@ import (
 
 type Storage interface {
 	RunMigrations(connectionString string) error
-	CreateVoter(request api.NewVoterRequest) error
+	CreateVoter(request api.NewVoterRequest) (int, error)
 	CreateVoteEntry(request api.NewVoteRequest) error
 	CreateElection(request api.NewElectionRequest) error
 	CreateParty(request api.NewPartyRequest) error
@@ -28,6 +28,7 @@ type Storage interface {
 	GetAllCandidates() ([]api.Candidate, error)
 	GetParty(candidateID int) (api.Party, error)
 	GetAllParties() ([]api.Party, error)
+	HasVoted(voterID int) (bool, error)
 }
 
 type storage struct {
@@ -64,29 +65,31 @@ func (s *storage) RunMigrations(connectionString string) error {
 	return nil
 }
 
-func (s *storage) CreateVoter(request api.NewVoterRequest) error {
+func (s *storage) CreateVoter(request api.NewVoterRequest) (int, error) {
 	newVoterStatement := `
 		INSERT INTO "voter" (first_name, last_name, date_of_birth, contact_number)
-		VALUES ($1, $2, $3, $4);
+		VALUES ($1, $2, $3, $4) RETURNING voter_id;
 		`
-	err := s.db.QueryRow(newVoterStatement, request.FirstName, request.LastName, request.DateOfBirth, request.ContactNumber).Err()
+
+	var voterID int
+	err := s.db.QueryRow(newVoterStatement, request.FirstName, request.LastName, request.DateOfBirth, request.ContactNumber).Scan(&voterID)
 
 	if err != nil {
 		log.Printf("this was the error: %v", err.Error())
-		return err
+		return 0, err
 	}
 
-	return nil
+	return voterID, nil
 }
 
 func (s *storage) CreateVoteEntry(request api.NewVoteRequest) error {
 	newVoteStatement := `
-		INSERT INTO vote (candidate_id, voter_id)
-		VALUES ($1, $2, $3, $4)
+		INSERT INTO vote (party_id, voter_id)
+		VALUES ($1, $2)
 		RETURNING vote_id;
 		`
 
-	err := s.db.QueryRow(newVoteStatement, request.CandidateID, request.VoterID).Err()
+	err := s.db.QueryRow(newVoteStatement, request.PartyID, request.VoterID).Err()
 
 	if err != nil {
 		log.Printf("this was the error: %v", err.Error())
@@ -169,7 +172,7 @@ func (s *storage) GetVoteByVoter(voterID int) (api.Vote, error) {
 						`
 
 	var vote api.Vote
-	err := s.db.QueryRow(getVoteStatement, voterID).Scan(&vote.VoteID, &vote.CandidateID, &vote.VoterID, &vote.VoteTimestamp)
+	err := s.db.QueryRow(getVoteStatement, voterID).Scan(&vote.VoteID, &vote.PartyID, &vote.VoterID, &vote.VoteTimestamp)
 
 	if err != nil {
 		log.Printf("this was the error: %v", err.Error())
@@ -314,4 +317,23 @@ func (s *storage) GetAllParties() ([]api.Party, error) {
 	}
 
 	return parties, nil
+}
+
+func (s *storage) HasVoted(voterID int) (bool, error) {
+	query := `
+		SELECT EXISTS (
+			SELECT 1 FROM vote
+			WHERE voter_id = $1
+		);
+	`
+
+	var hasVoted bool
+	err := s.db.QueryRow(query, voterID).Scan(&hasVoted)
+
+	if err != nil {
+		log.Printf("Error checking if voter has voted: %v", err.Error())
+		return false, err
+	}
+
+	return hasVoted, nil
 }

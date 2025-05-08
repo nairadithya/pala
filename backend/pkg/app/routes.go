@@ -12,6 +12,7 @@ func (s *Server) Routes() *gin.Engine {
 		{
 			user.POST("", s.CreateVoter())
 			user.GET("/:id", s.GetVoterInfo())
+			user.GET("/:id/voted", s.VoterHasVoted())
 		}
 
 		vote := v1.Group("/vote")

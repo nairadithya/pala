@@ -64,14 +64,12 @@ type NewCandidateRequest struct {
 
 type Vote struct {
 	VoteID        int       `json:"vote_id"`
-	CandidateID   int       `json:"candidate_id"`
+	PartyID       int       `json:"candidate_id"`
 	VoterID       int       `json:"voter_id"`
 	VoteTimestamp time.Time `json:"vote_timestamp"`
 }
 
 type NewVoteRequest struct {
-	VoteID      int `json:"vote_id"`
-	ElectionID  int `json:"election_id"`
-	CandidateID int `json:"candidate_id"`
-	VoterID     int `json:"voter_id"`
+	PartyID int `json:"party_id"`
+	VoterID int `json:"voter_id"`
 }

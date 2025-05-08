@@ -1,9 +1,10 @@
 package app
 
 import (
-	"github.com/gin-gonic/gin"
 	"log"
 	"pala/backend/pkg/api"
+
+	"github.com/gin-gonic/gin"
 )
 
 type Server struct {
@@ -28,7 +29,7 @@ func NewServer(router *gin.Engine, voterService api.VoterService, voteService ap
 
 func (s *Server) Run() error {
 	r := s.Routes()
-
+	// gin.SetMode(gin.ReleaseMode)
 	err := r.Run(":1234")
 
 	if err != nil {

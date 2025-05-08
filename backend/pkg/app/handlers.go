@@ -27,30 +27,61 @@ func (s *Server) CreateVoter() gin.HandlerFunc {
 		c.Header("Content-Type", "application/json")
 
 		var newVoter api.NewVoterRequest
-		err := c.ShouldBindJSON(&newVoter)
-
-		if err != nil {
+		if err := c.ShouldBindJSON(&newVoter); err != nil {
 			log.Printf("handler error: %v", err)
-			c.JSON(http.StatusBadRequest, nil)
+			c.JSON(http.StatusBadRequest, gin.H{"message": "Invalid request payload", "error": err.Error()})
 			return
 		}
 
-		err = s.voterService.New(newVoter)
+		voterID, err := s.voterService.New(newVoter)
 
 		if err != nil {
 			log.Printf("service error: %v", err)
-			c.JSON(http.StatusInternalServerError, nil)
+			statusCode := http.StatusInternalServerError
+			errorMessage := "Failed to create voter"
+			c.JSON(statusCode, gin.H{"message": errorMessage, "error": err.Error()})
 			return
 		}
 
-		response := map[string]string{
-			"status": "success",
-			"data":   "new voter created",
+		response := gin.H{
+			"status":   "success",
+			"message":  "New voter created successfully",
+			"voter_id": voterID,
 		}
 
 		c.JSON(http.StatusOK, response)
 	}
 }
+
+// func (s *Server) CreateVoter() gin.HandlerFunc {
+// 	return func(c *gin.Context) {
+// 		c.Header("Content-Type", "application/json")
+
+// 		var newVoter api.NewVoterRequest
+// 		err := c.ShouldBindJSON(&newVoter)
+
+// 		if err != nil {
+// 			log.Printf("handler error: %v", err)
+// 			c.JSON(http.StatusBadRequest, nil)
+// 			return
+// 		}
+
+// 		err = s.voterService.New(newVoter)
+
+// 		if err != nil {
+// 			log.Printf("service error: %v", err)
+// 			c.JSON(http.StatusInternalServerError, nil)
+// 			return
+// 		}
+
+// 		response := map[string]string{
+// 			"status": "success",
+// 			"data":   "new voter created",
+// 		}
+
+// 		c.JSON(http.StatusOK, response)
+// 	}
+// }
 
 func (s *Server) CreateVote() gin.HandlerFunc {
 	return func(c *gin.Context) {
@@ -75,7 +106,7 @@ func (s *Server) CreateVote() gin.HandlerFunc {
 
 		response := map[string]string{
 			"status": "success",
-			"data":   "new voter created",
+			"data":   "new vote created",
 		}
 
 		c.JSON(http.StatusOK, response)
@@ -142,7 +173,7 @@ func (s *Server) GetAllCandidateInfo() gin.HandlerFunc {
 
 func (s *Server) GetAllParties() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		c.Header("Content-Type", "application/json")
+		c.Header("content-type", "application/json")
 
 		parties, err := s.partyService.GetAllParties()
 
@@ -155,6 +186,40 @@ func (s *Server) GetAllParties() gin.HandlerFunc {
 		response := map[string]interface{}{
 			"status": "success",
 			"data":   parties,
+		}
+
+		c.JSON(http.StatusOK, response)
+	}
+}
+
+func (s *Server) VoterHasVoted() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		c.Header("Content-Type", "application/json")
+
+		idStr := c.Param("id")
+		if idStr == "" {
+			log.Printf("handler error: missing voter ID in path")
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Missing voter ID in path"})
+			return
+		}
+
+		voterID, err := strconv.Atoi(idStr)
+		if err != nil {
+			log.Printf("handler error: %v", err)
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid voter ID format"})
+			return
+		}
+
+		hasVotedResult, err := s.voterService.HasVoted(voterID)
+		if err != nil {
+			log.Printf("service error: %v", err)
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to check voting status"})
+			return
+		}
+
+		response := map[string]interface{}{
+			"status":   "success",
+			"hasVoted": hasVotedResult,
 		}
 
 		c.JSON(http.StatusOK, response)

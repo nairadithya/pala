@@ -6,7 +6,7 @@ COPY go.mod go.sum ./
 RUN go mod download
 COPY . .
 
-RUN CGO_ENABLED=0 go build -o server -ldflags='-s -w' cmd/server/main.go
+RUN GIN_MODE=release CGO_ENABLED=0 go build -o server -ldflags='-s -w' cmd/server/main.go
 
 FROM golang:1.23.8
 
