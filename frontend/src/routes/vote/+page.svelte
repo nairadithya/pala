@@ -3,17 +3,17 @@
 	import { voter } from '$lib/stores/voterStore.js';
 	import { goto } from '$app/navigation';
 
-	console.log(voter);
-
 	let isLoading = true;
 	let error: string | null = null;
 	let hasVoted = false;
-	let parties = [];
-	let selectedParty = null;
+	let parties: any = [];
+	let selectedParty: any = null;
 	let isSubmitting = false;
 	let successMessage = '';
 
 	onMount(async () => {
+		console.log('Voter data on mount:', $voter);
+
 		if (!$voter || !$voter.data || !$voter.data.id) {
 			goto('/');
 			return;
@@ -55,26 +55,32 @@
 		error = null;
 
 		try {
-			const response = await fetch('v1/api/vote', {
+			// Updated fetch URL to include voter_id and modified body
+			const response = await fetch(`v1/api/vote`, {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json'
 				},
 				body: JSON.stringify({
-					voterId: $voter.data.id,
-					partyId: selectedParty
+					voter_id: $voter?.data.id,
+					party_id: selectedParty
 				})
 			});
 
 			if (!response.ok) {
-				throw new Error(`Error: ${response.status} - ${response.statusText}`);
+				const errorData = await response.json().catch(() => ({ message: response.statusText }));
+				throw new Error(`Error: ${response.status} - ${errorData.message || response.statusText}`);
 			}
 
+			// Assuming the API returns some confirmation, though not strictly necessary for the update
+			// const result = await response.json();
+			// console.log('Vote submission result:', result);
+
 			successMessage = 'Your vote has been recorded successfully!';
-			hasVoted = true;
+			hasVoted = true; // Set hasVoted to true after successful submission
 		} catch (err) {
 			console.error('Vote submission failed:', err);
-			error = 'Failed to submit your vote. Please try again.';
+			error = err.message || 'Failed to submit your vote. Please try again.';
 		} finally {
 			isSubmitting = false;
 		}
@@ -124,6 +130,28 @@
 					<div class="rounded border-l-4 border-red-500 bg-red-50 p-4">
 						<p class="text-sm text-red-700">{error}</p>
 					</div>
+				{:else if successMessage && hasVoted}
+					<div class="rounded border-l-4 border-green-500 bg-green-50 p-6 text-center">
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							class="mx-auto mb-3 h-12 w-12 text-green-500"
+							fill="none"
+							viewBox="0 0 24 24"
+							stroke="currentColor"
+						>
+							<path
+								stroke-linecap="round"
+								stroke-linejoin="round"
+								stroke-width="2"
+								d="M5 13l4 4L19 7"
+							/>
+						</svg>
+						<h2 class="mb-2 text-xl font-bold text-green-700">Thank You For Voting!</h2>
+						<p class="text-green-600">{successMessage}</p>
+						<p class="mt-4 text-green-600">
+							Your vote has been recorded and is now part of the election.
+						</p>
+					</div>
 				{:else if hasVoted}
 					<div class="rounded border-l-4 border-green-500 bg-green-50 p-6 text-center">
 						<svg
@@ -141,25 +169,16 @@
 							/>
 						</svg>
 						<h2 class="mb-2 text-xl font-bold text-green-700">Thank You For Voting!</h2>
-						<p class="text-green-600">
-							Your vote has been recorded and is now part of the election.
-						</p>
-						<p class="mt-4 text-green-600">You have already cast your ballot for this election.</p>
+						<p class="text-green-600">You have already cast your ballot for this election.</p>
 					</div>
 				{:else}
-					{#if successMessage}
-						<div class="mb-6 rounded border-l-4 border-green-500 bg-green-50 p-4">
-							<p class="text-sm text-green-700">{successMessage}</p>
-						</div>
-					{/if}
-
 					<h2 class="mb-4 text-xl font-semibold text-gray-800">Select Your Party</h2>
 
 					{#if parties.length === 0}
 						<p class="text-gray-600">No parties available at this time.</p>
 					{:else}
 						<div class="space-y-3">
-							{#each parties as party}
+							{#each parties as party (party.party_id)}
 								<label
 									class="flex cursor-pointer items-center rounded-lg border p-4 transition-colors duration-200 hover:bg-blue-50 {selectedParty ===
 									party.party_id

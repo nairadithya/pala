@@ -1,9 +1,6 @@
-# Use version 3.8 of the Docker Compose file format (or higher if needed)
-version: '3.8'
+version: "3.8"
 
 services:
-
-  # Traefik service (Reverse Proxy and Load Balancer)
   traefik:
     image: "traefik:v3.4"
     container_name: "traefik"
@@ -12,19 +9,48 @@ services:
       - "--api.insecure=true"
       - "--providers.docker=true"
       - "--providers.docker.exposedbydefault=false"
+      - "--metrics.prometheus=true"
+      - "--metrics.prometheus.entrypoint=metrics"
+      - "--entrypoints.metrics.address=:8082"
     ports:
       - "80:80"
       - "8080:8080"
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
+    networks:
+      - traefik_network
 
-  whoami:
-    image: "traefik/whoami"
-    container_name: "simple-service"
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.whoami.rule=Host(`whoami.localhost`)"
-      - "traefik.http.routers.whoami.entrypoints=web"
+  prometheus:
+    image: prom/prometheus:v2.49.1
+    container_name: prometheus
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --storage.tsdb.path=/prometheus
+      - --web.console.libraries=/usr/share/prometheus/console_libraries
+      - --web.console.templates=/usr/share/prometheus/consoles
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    networks:
+      - traefik_network
+
+  grafana:
+    image: grafana/grafana:10.3.3
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana_data:/var/lib/grafana
+      # Optional: Mount provisioning configs for data sources/dashboards (more advanced)
+      # - ./grafana/provisioning/datasources:/etc/grafana/provisioning/datasources
+      # - ./grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    networks:
+      - traefik_network
 
   db:
     container_name: pala-db-1
@@ -33,14 +59,16 @@ services:
     environment:
       POSTGRES_PASSWORD: example
       POSTGRES_DB: postgres
-      POSTGRES_USER: postgres 
+      POSTGRES_USER: postgres
     volumes:
       - pgdata:/var/lib/postgresql/data
-    # ports:
-    #   - 5432:5432
+    # ports: # Database port usually not exposed to the host unless needed for external tools
+    #   - 5432:5432
+    networks:
+      - traefik_network
 
   backend:
-    image: pala:0.0.2
+    image: pala:0.0.3
     environment:
       DB_HOST: db
       DB_PORT: 5432
@@ -54,7 +82,14 @@ services:
       - "traefik.http.routers.backend.rule=Host(`backend.localhost`)"
       - "traefik.http.routers.backend.entrypoints=web"
       - "traefik.http.services.backend.loadbalancer.server.port=1234"
+    networks:
+      - traefik_network
+
+networks:
+  traefik_network:
+    driver: bridge
 
 volumes:
   pgdata:
-
+  prometheus_data:
+  grafana_data:

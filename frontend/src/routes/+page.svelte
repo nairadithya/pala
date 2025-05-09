@@ -16,9 +16,7 @@
 		error = null;
 
 		try {
-			// Add logging to debug the request
 			console.log(`Looking up voter with ID: ${voterId}`);
-
 			const response = await fetch(`v1/api/voter/${voterId}`);
 			console.log('Response status:', response.status);
 
@@ -29,14 +27,21 @@
 			const voterData = await response.json();
 			console.log('Voter data received:', voterData);
 
-			// Store the voter data in the store
-			voter.set(voterData);
+			// Properly format and save the voter data to the store
+			voter.set({
+				data: {
+					id: voterData.data.voter_id,
+					firstName: voterData.data.first_name,
+					lastName: voterData.data.last_name,
+					dateOfBirth: voterData.data.date_of_birth,
+					contactNumber: voterData.data.contact_number
+				},
+				voter_id: voterData.data.voter_id,
+				status: voterData.status
+			});
 
-			// Add a small delay to ensure the store is updated before navigation
-			setTimeout(() => {
-				console.log('Navigating to /vote');
-				window.location.href = '/vote';
-			}, 100);
+			// Navigate to the voting page
+			goto('/vote');
 		} catch (err) {
 			console.error('Voter lookup failed:', err);
 			error = 'Could not find voter with that ID. Please check and try again.';
