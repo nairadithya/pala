@@ -29,3 +29,12 @@ Alternatively, if `make` is installed,
 make frontend # for the frontend
 make backend # for the backend
 ```
+
+# Report
+To compile the report, you need [Typst](https://typst.app/) installed
+
+``` sh
+typst compile submissions/report.typ
+```
+
+`
