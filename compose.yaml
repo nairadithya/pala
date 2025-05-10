@@ -62,7 +62,7 @@ services:
       POSTGRES_USER: postgres
     volumes:
       - pgdata:/var/lib/postgresql/data
-    # ports: # Database port usually not exposed to the host unless needed for external tools
+    # ports: 
     #   - 5432:5432
     networks:
       - traefik_network
